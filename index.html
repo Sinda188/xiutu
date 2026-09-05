@@ -40,7 +40,9 @@
   .btn.ghost-dark{color:#fff; border:1px solid rgba(255,255,255,.4);}
 
   /* 主视觉：全宽黑色区块 */
-  .hero{background:var(--black); color:#fff; text-align:center; padding:72px 22px 64px;}
+  .hero{background-color:var(--black); color:#fff; text-align:center; padding:72px 22px 64px;
+        background-image:radial-gradient(640px 520px at 30% 45%, rgba(41,151,255,.26), transparent 65%), radial-gradient(640px 520px at 70% 55%, rgba(41,151,255,.20), transparent 65%);
+        background-size:200% 200%; animation:flowGlow 12s ease-in-out infinite;}
   .hero-title{font-size:40px; font-weight:600; letter-spacing:0; line-height:1.15; margin:0 0 14px;}
   .hero-sub{font-size:21px; font-weight:400; color:#cccccc; letter-spacing:0; margin:0 0 40px;}
   .stage{position:relative; max-width:980px; margin:0 auto; touch-action:pan-y; --cut:50%;}
@@ -54,8 +56,8 @@
 
   /* 区块（全宽、颜色交替） */
   .band{padding:72px 22px;}
-  .band.light{background:var(--canvas); background-image:radial-gradient(900px 560px at 6% 45%, rgba(0,102,204,.20), transparent 65%), radial-gradient(900px 560px at 94% 55%, rgba(0,102,204,.20), transparent 65%);}
-  .band.parchment{background:var(--parchment); background-image:radial-gradient(900px 560px at 6% 40%, rgba(0,102,204,.18), transparent 65%), radial-gradient(900px 560px at 94% 60%, rgba(0,102,204,.18), transparent 65%);}
+  .band.light{background-color:var(--canvas); background-image:radial-gradient(900px 560px at 14% 45%, rgba(0,102,204,.20), transparent 65%), radial-gradient(900px 560px at 86% 55%, rgba(0,102,204,.20), transparent 65%); background-size:200% 200%; animation:flowGlow 12s ease-in-out infinite;}
+  .band.parchment{background-color:var(--parchment); background-image:radial-gradient(900px 560px at 14% 40%, rgba(0,102,204,.18), transparent 65%), radial-gradient(900px 560px at 86% 60%, rgba(0,102,204,.18), transparent 65%); background-size:200% 200%; animation:flowGlow 12s ease-in-out infinite;}
   .band-inner{max-width:1200px; margin:0 auto;}
   .sec-title{font-size:28px; font-weight:600; letter-spacing:0; margin:0 0 28px; display:flex; align-items:center; justify-content:space-between;}
 
@@ -109,12 +111,7 @@
   .stage{animation:rise .8s .2s ease both;}
   .hero-actions{animation:rise .8s .3s ease both;}
   .hero{position:relative; overflow:hidden;}
-  .hero::before{content:""; position:absolute; inset:0; pointer-events:none;
-    background:
-      radial-gradient(620px 420px at 50% 0%, rgba(41,151,255,.26), transparent 70%),
-      radial-gradient(560px 560px at 4% 55%, rgba(41,151,255,.22), transparent 70%),
-      radial-gradient(560px 560px at 96% 55%, rgba(41,151,255,.22), transparent 70%);
-    animation:glow 8s ease-in-out infinite alternate;}
+  @keyframes flowGlow{0%,100%{background-position:0% 50%;} 50%{background-position:100% 50%;}}
   @keyframes glow{from{opacity:.55;} to{opacity:1;}}
   .chip{transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;}
   .chip:hover{transform:translateY(-3px);}
