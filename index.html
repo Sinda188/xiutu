@@ -54,8 +54,8 @@
 
   /* 区块（全宽、颜色交替） */
   .band{padding:72px 22px;}
-  .band.light{background:var(--canvas); background-image:radial-gradient(780px 460px at 4% 42%, rgba(0,102,204,.10), transparent 62%), radial-gradient(780px 460px at 96% 58%, rgba(0,102,204,.10), transparent 62%);}
-  .band.parchment{background:var(--parchment); background-image:radial-gradient(780px 460px at 4% 38%, rgba(0,102,204,.09), transparent 62%), radial-gradient(780px 460px at 96% 62%, rgba(0,102,204,.09), transparent 62%);}
+  .band.light{background:var(--canvas); background-image:radial-gradient(900px 560px at 6% 45%, rgba(0,102,204,.20), transparent 65%), radial-gradient(900px 560px at 94% 55%, rgba(0,102,204,.20), transparent 65%);}
+  .band.parchment{background:var(--parchment); background-image:radial-gradient(900px 560px at 6% 40%, rgba(0,102,204,.18), transparent 65%), radial-gradient(900px 560px at 94% 60%, rgba(0,102,204,.18), transparent 65%);}
   .band-inner{max-width:1200px; margin:0 auto;}
   .sec-title{font-size:28px; font-weight:600; letter-spacing:0; margin:0 0 28px; display:flex; align-items:center; justify-content:space-between;}
 
@@ -111,9 +111,9 @@
   .hero{position:relative; overflow:hidden;}
   .hero::before{content:""; position:absolute; inset:0; pointer-events:none;
     background:
-      radial-gradient(620px 420px at 50% 0%, rgba(41,151,255,.20), transparent 70%),
-      radial-gradient(520px 520px at 0% 55%, rgba(41,151,255,.16), transparent 70%),
-      radial-gradient(520px 520px at 100% 55%, rgba(41,151,255,.16), transparent 70%);
+      radial-gradient(620px 420px at 50% 0%, rgba(41,151,255,.26), transparent 70%),
+      radial-gradient(560px 560px at 4% 55%, rgba(41,151,255,.22), transparent 70%),
+      radial-gradient(560px 560px at 96% 55%, rgba(41,151,255,.22), transparent 70%);
     animation:glow 8s ease-in-out infinite alternate;}
   @keyframes glow{from{opacity:.55;} to{opacity:1;}}
   .chip{transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;}
@@ -593,6 +593,11 @@
 
   buildChips();
   ensureImage();
+  if (allFilters().length > 0) {
+    var first = allFilters()[0];
+    setParams(first.params, first.id);
+    document.getElementById("curName").textContent = "当前：" + first.name;
+  }
   draw();
 
   if ("IntersectionObserver" in window){
