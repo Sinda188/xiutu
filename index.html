@@ -156,7 +156,6 @@
       </div>
       <div class="hero-actions">
         <button class="btn ghost-dark" id="btnReset">重置参数</button>
-        <button class="btn ghost-dark" id="btnSave">💾 存为我的滤镜</button>
         <span class="hint" id="curName"></span>
       </div>
       <p class="hint" style="margin-top:18px;">拖动照片中间的线，左右对比原图与滤镜效果</p>
@@ -231,12 +230,7 @@
   }
 
   function loadFilters(){
-    var list = (window.FILTERS || []).slice();
-    try {
-      var custom = JSON.parse(localStorage.getItem("xiutu.custom") || "[]");
-      custom.forEach(function(f){ f.custom = true; list.push(f); });
-    } catch(e){}
-    return list;
+    return (window.FILTERS || []).slice();
   }
   function allFilters(){ return loadFilters(); }
 
@@ -474,7 +468,7 @@
       var cv = renderToCanvas(makeSample(120, 80), f.params, 120);
       var name = document.createElement("div"); name.className = "name"; name.textContent = f.name;
       var tag = document.createElement("div"); tag.className = "tag";
-      tag.textContent = (f.tags||[]).join(" · ") + (f.custom ? " (我的)" : "");
+      tag.textContent = (f.tags||[]).join(" · ");
       chip.appendChild(cv); chip.appendChild(name); chip.appendChild(tag);
       chip.addEventListener("click", function(){
         setParams(f.params, f.id);
@@ -517,17 +511,8 @@
     img.src = url;
   });
 
-  document.getElementById("btnSave").addEventListener("click", function(){
-    var name = prompt("给这个滤镜起个名字：");
-    if (!name) return;
-    var f = { id: "custom-" + Date.now(), name: name, desc: "自定义", tags: ["我的"], params: cloneParams(curParams), custom: true };
-    var custom = [];
-    try { custom = JSON.parse(localStorage.getItem("xiutu.custom") || "[]"); } catch(e){}
-    custom.push(f);
-    localStorage.setItem("xiutu.custom", JSON.stringify(custom));
-    buildChips();
-    toast("已保存：" + name);
-  });
+  // 清理旧版“我的滤镜”本地数据（如“滤镜1”）
+  try { localStorage.removeItem("xiutu.custom"); } catch(e){}
 
   var cmpDlg = document.getElementById("cmpDlg");
   document.getElementById("btnCompare").addEventListener("click", function(){
