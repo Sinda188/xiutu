@@ -41,6 +41,7 @@
 
   /* 主视觉：全宽黑色区块 */
   .hero{background-color:var(--black); color:#fff; text-align:center; padding:72px 22px 64px;}
+  .eyebrow{font-size:13px; font-weight:600; letter-spacing:3px; color:var(--primary-on-dark); text-transform:uppercase; margin-bottom:18px;}
   .hero-title{font-size:40px; font-weight:600; letter-spacing:0; line-height:1.15; margin:0 0 14px;}
   .hero-sub{font-size:21px; font-weight:400; color:#cccccc; letter-spacing:0; margin:0 0 40px;}
   .stage{position:relative; max-width:980px; margin:0 auto; touch-action:pan-y; --cut:50%;}
@@ -158,6 +159,7 @@
 <main class="editor">
   <div class="col-main">
     <section class="hero">
+      <div class="eyebrow">滤镜工作室</div>
       <h2 class="hero-title">让照片更有质感</h2>
       <p class="hero-sub">选一个滤镜，或手动微调，导出高清照片。</p>
       <div class="stage" id="stage">
@@ -249,16 +251,78 @@
   function makeSample(w, h){
     var c = document.createElement("canvas"); c.width=w; c.height=h;
     var g = c.getContext("2d");
-    var sky = g.createLinearGradient(0,0,0,h*0.62);
-    sky.addColorStop(0,"#8ec8e8"); sky.addColorStop(1,"#f4e7c3");
-    g.fillStyle=sky; g.fillRect(0,0,w,h*0.62);
-    g.fillStyle="#6fa08a"; g.beginPath();
-    g.moveTo(0,h*0.5); g.lineTo(w*0.3,h*0.32); g.lineTo(w*0.55,h*0.48); g.lineTo(w,h*0.3); g.lineTo(w,h*0.62); g.lineTo(0,h*0.62); g.closePath(); g.fill();
-    var gr = g.createLinearGradient(0,h*0.6,0,h);
-    gr.addColorStop(0,"#5d9b62"); gr.addColorStop(1,"#2f6b3a");
-    g.fillStyle=gr; g.fillRect(0,h*0.6,w,h*0.4);
-    g.fillStyle="#3aa6b8"; g.beginPath();
-    g.ellipse(w*0.5, h*0.78, w*0.42, h*0.14, 0, 0, Math.PI*2); g.fill();
+    var horizon = h*0.62;
+
+    // 暮色天空
+    var sky = g.createLinearGradient(0,0,0,horizon);
+    sky.addColorStop(0,"#1a2b4d");
+    sky.addColorStop(0.35,"#3a5f8a");
+    sky.addColorStop(0.72,"#c86f4b");
+    sky.addColorStop(0.9,"#f2b45e");
+    sky.addColorStop(1,"#f7cf7d");
+    g.fillStyle=sky; g.fillRect(0,0,w,horizon);
+
+    // 太阳光晕 + 圆盘
+    var glow = g.createRadialGradient(w*0.68,horizon-10,0, w*0.68,horizon-10, h*0.30);
+    glow.addColorStop(0,"rgba(255,240,205,0.95)");
+    glow.addColorStop(0.3,"rgba(255,220,160,0.40)");
+    glow.addColorStop(1,"rgba(255,220,160,0)");
+    g.fillStyle=glow; g.fillRect(0,0,w,horizon);
+    g.fillStyle="#ffe9b8";
+    g.beginPath(); g.arc(w*0.68,horizon-10,h*0.05,0,Math.PI*2); g.fill();
+
+    // 远山（雾化浅层）
+    g.fillStyle="rgba(112,132,168,0.6)";
+    g.beginPath(); g.moveTo(0,horizon*0.9);
+    g.lineTo(w*0.16,horizon*0.55); g.lineTo(w*0.34,horizon*0.82);
+    g.lineTo(w*0.52,horizon*0.48); g.lineTo(w*0.72,horizon*0.82);
+    g.lineTo(w*0.9,horizon*0.5); g.lineTo(w,horizon*0.76);
+    g.lineTo(w,horizon); g.lineTo(0,horizon); g.closePath(); g.fill();
+
+    // 中景山（深色）
+    g.fillStyle="#33455f";
+    g.beginPath(); g.moveTo(0,horizon);
+    g.lineTo(w*0.14,horizon*0.72); g.lineTo(w*0.32,horizon*0.94);
+    g.lineTo(w*0.5,horizon*0.62); g.lineTo(w*0.66,horizon*0.9);
+    g.lineTo(w*0.84,horizon*0.66); g.lineTo(w,horizon*0.84);
+    g.lineTo(w,horizon); g.lineTo(0,horizon); g.closePath(); g.fill();
+
+    // 湖面
+    var lake = g.createLinearGradient(0,horizon,0,h);
+    lake.addColorStop(0,"#3a5a72");
+    lake.addColorStop(0.4,"#233c50");
+    lake.addColorStop(1,"#101f2b");
+    g.fillStyle=lake; g.fillRect(0,horizon,w,h-horizon);
+
+    // 太阳倒影（湖面光带）
+    var refl = g.createLinearGradient(0,horizon,0,h);
+    refl.addColorStop(0,"rgba(247,200,115,0.65)");
+    refl.addColorStop(0.3,"rgba(247,180,90,0.2)");
+    refl.addColorStop(0.6,"rgba(247,180,90,0)");
+    g.fillStyle=refl;
+    g.beginPath(); g.moveTo(w*0.52,horizon); g.lineTo(w*0.9,horizon);
+    g.lineTo(w*0.78,h); g.lineTo(w*0.56,h); g.closePath(); g.fill();
+
+    // 近景岸边剪影
+    g.fillStyle="#0c1620";
+    g.beginPath(); g.moveTo(0,h); g.lineTo(0,h*0.86); g.lineTo(w*0.1,h*0.85);
+    g.lineTo(w*0.2,h*0.89); g.lineTo(w*0.34,h*0.87); g.lineTo(w*0.42,h);
+    g.closePath(); g.fill();
+    g.beginPath(); g.moveTo(w,h); g.lineTo(w,h*0.85); g.lineTo(w*0.88,h*0.87); g.lineTo(w*0.75,h);
+    g.closePath(); g.fill();
+
+    // 松树剪影
+    function pine(x, y, s){
+      g.fillRect(x-s*0.05, y-s*0.5, s*0.1, s*0.5);
+      for(var i=0;i<3;i++){
+        var y0=y-s*0.5+i*s*0.16, wd=s*(0.16-i*0.035);
+        g.beginPath(); g.moveTo(x-wd,y0); g.lineTo(x,y0-s*0.24); g.lineTo(x+wd,y0);
+        g.closePath(); g.fill();
+      }
+    }
+    pine(w*0.09,h*0.93,w*0.16);
+    pine(w*0.2,h*0.91,w*0.11);
+    pine(w*0.92,h*0.9,w*0.13);
     return c;
   }
 
