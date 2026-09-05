@@ -41,8 +41,8 @@
 
   /* 主视觉：全宽黑色区块 */
   .hero{background-color:var(--black); color:#fff; text-align:center; padding:72px 22px 64px;
-        background-image:radial-gradient(640px 520px at 30% 45%, rgba(41,151,255,.26), transparent 65%), radial-gradient(640px 520px at 70% 55%, rgba(41,151,255,.20), transparent 65%);
-        background-size:200% 200%; animation:flowGlow 12s ease-in-out infinite;}
+        background-image:radial-gradient(680px 540px at 30% 45%, rgba(41,151,255,.34), transparent 66%), radial-gradient(680px 540px at 70% 55%, rgba(41,151,255,.28), transparent 66%);
+        background-size:200% 200%; animation:flowGlow 10s ease-in-out infinite;}
   .hero-title{font-size:40px; font-weight:600; letter-spacing:0; line-height:1.15; margin:0 0 14px;}
   .hero-sub{font-size:21px; font-weight:400; color:#cccccc; letter-spacing:0; margin:0 0 40px;}
   .stage{position:relative; max-width:980px; margin:0 auto; touch-action:pan-y; --cut:50%;}
@@ -60,27 +60,28 @@
   .col-side{position:sticky; top:76px; max-height:calc(100vh - 96px); overflow:auto; background:var(--canvas); border:1px solid var(--hairline); border-radius:18px; padding:22px;}
   .filters{background:var(--canvas); border:1px solid var(--hairline); border-radius:18px; padding:22px; margin-top:24px;}
   .sec-title{font-size:21px; font-weight:600; letter-spacing:0; margin:0 0 20px; display:flex; align-items:center; justify-content:space-between;}
-  .hide{display:none !important;}
-
-  /* 双区切换 */
-  .tabbar{display:flex; justify-content:center; padding:14px 0 0;}
-  .seg{display:inline-flex; background:var(--parchment); border:1px solid var(--hairline); border-radius:9999px; padding:3px;}
-  .tab{border:none; background:transparent; color:var(--muted); font-size:15px; font-weight:500; padding:8px 28px; border-radius:9999px; cursor:pointer; letter-spacing:0;}
-  .tab.active{background:var(--canvas); color:var(--ink); font-weight:600;}
-
-  /* 风格区 */
-  .style-zone{max-width:820px; margin:0 auto; padding:56px 20px 80px;}
-  .style-title{font-size:40px; font-weight:600; letter-spacing:0; margin:0 0 14px;}
-  .style-lead{font-size:21px; color:var(--muted); margin:0 0 40px; line-height:1.5; letter-spacing:0;}
-  .steps{background:var(--canvas); border:1px solid var(--hairline); border-radius:18px; overflow:hidden; margin-bottom:24px;}
-  .step{display:flex; gap:18px; padding:22px 24px; border-bottom:1px solid var(--divider-soft); align-items:flex-start;}
-  .step:last-child{border-bottom:none;}
-  .step-num{width:32px; height:32px; border-radius:9999px; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:600; flex:0 0 auto; font-size:15px;}
-  .step-txt b{display:block; font-size:17px; font-weight:600; margin-bottom:4px; letter-spacing:0;}
-  .step-txt span{font-size:15px; color:var(--muted); letter-spacing:0;}
-  .style-empty{background:var(--parchment); border:1px solid var(--hairline); border-radius:18px; padding:24px; text-align:center;}
-  .style-empty span{font-size:17px; font-weight:600;}
-  .style-empty p{font-size:14px; color:var(--muted); margin-top:6px;}
+  /* 动态流光 */
+  header::after{
+    content:""; position:absolute; left:0; right:0; bottom:-1px; height:2px;
+    background:linear-gradient(90deg, transparent 0%, var(--primary) 30%, #2997ff 50%, var(--primary) 70%, transparent 100%);
+    background-size:200% 100%;
+    animation:glowbar 4s linear infinite;
+  }
+  .hero::after{
+    content:""; position:absolute; top:-60%; bottom:-60%; width:26%;
+    background:linear-gradient(100deg, transparent 0%, rgba(41,151,255,.35) 50%, transparent 100%);
+    transform:translateX(-320%) skewX(-16deg);
+    animation:sweep 5.5s ease-in-out infinite;
+    pointer-events:none;
+  }
+  @keyframes sweep{
+    0%{ transform:translateX(-320%) skewX(-16deg); }
+    55%,100%{ transform:translateX(420%) skewX(-16deg); }
+  }
+  @keyframes glowbar{
+    0%{ background-position:200% 0; }
+    100%{ background-position:-200% 0; }
+  }
 
   /* 滤镜胶囊 */
   .chips{display:flex; gap:14px; overflow-x:auto; padding-bottom:8px; -webkit-overflow-scrolling:touch;}
@@ -164,13 +165,6 @@
   <button class="btn primary" id="btnUpload">上传照片</button>
 </header>
 
-<div class="tabbar">
-  <div class="seg">
-    <button class="tab active" id="tabFilter">滤镜</button>
-    <button class="tab" id="tabStyle">风格</button>
-  </div>
-</div>
-
 <main class="editor">
   <div class="col-main">
     <section class="hero">
@@ -200,29 +194,6 @@
     <div id="sliders"></div>
   </aside>
 </main>
-
-<section class="style-zone hide" id="styleZone">
-  <h2 class="style-title">AI 帮你 P 图</h2>
-  <p class="style-lead">把照片发到对话里，我用各种风格技能帮你修图、给你建议，成品直接存到你本地。</p>
-  <div class="steps">
-    <div class="step">
-      <div class="step-num">1</div>
-      <div class="step-txt"><b>发照片</b><span>在对话里发送照片的本地路径，或直接描述你的需求</span></div>
-    </div>
-    <div class="step">
-      <div class="step-num">2</div>
-      <div class="step-txt"><b>AI 建议</b><span>我分析照片，给出适合的风格和建议</span></div>
-    </div>
-    <div class="step">
-      <div class="step-num">3</div>
-      <div class="step-txt"><b>出图</b><span>用各种 skills 帮你 P 好，成品存到 D:\Pi\成品</span></div>
-    </div>
-  </div>
-  <div class="style-empty">
-    <span>风格库即将上线</span>
-    <p>后续你把喜欢的风格 skills 发给我，我会一个个添加到这里。</p>
-  </div>
-</section>
 
 <footer>照片全程在你的浏览器本地处理，不会上传到任何服务器。</footer>
 
@@ -643,21 +614,6 @@
     }, {threshold:.12});
     document.querySelectorAll(".filters").forEach(function(b){ b.classList.add("reveal"); io.observe(b); });
   }
-
-  // 双区切换
-  var editor = document.querySelector(".editor");
-  var styleZone = document.getElementById("styleZone");
-  var tabFilter = document.getElementById("tabFilter");
-  var tabStyle = document.getElementById("tabStyle");
-  function switchTab(which){
-    var isFilter = which === "filter";
-    editor.classList.toggle("hide", !isFilter);
-    styleZone.classList.toggle("hide", isFilter);
-    tabFilter.classList.toggle("active", isFilter);
-    tabStyle.classList.toggle("active", !isFilter);
-  }
-  tabFilter.addEventListener("click", function(){ switchTab("filter"); });
-  tabStyle.addEventListener("click", function(){ switchTab("style"); });
 
   window.xiutu = { processPixels: processPixels, makeSample: makeSample, renderToCanvas: renderToCanvas, FILTER_PARAMS: FILTER_PARAMS };
 })();
