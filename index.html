@@ -43,8 +43,11 @@
   .hero{background:var(--black); color:#fff; text-align:center; padding:72px 22px 64px;}
   .hero-title{font-size:40px; font-weight:600; letter-spacing:-0.374px; line-height:1.1; margin:0 0 14px;}
   .hero-sub{font-size:21px; font-weight:400; color:#cccccc; letter-spacing:.231px; margin:0 0 40px;}
-  .stage{max-width:980px; margin:0 auto;}
-  .stage canvas{display:block; max-width:100%; margin:0 auto;}
+  .stage{position:relative; max-width:980px; margin:0 auto; touch-action:pan-y; --cut:50%;}
+  #origCanvas{display:block; width:100%; height:auto;}
+  #preview{position:absolute; inset:0; width:100%; height:100%; clip-path:inset(0 0 0 var(--cut)); transition:opacity .25s ease;}
+  .ba-handle{position:absolute; top:0; bottom:0; left:var(--cut); width:2px; margin-left:-1px; background:rgba(255,255,255,.92); cursor:ew-resize; z-index:2;}
+  .ba-knob{position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:44px; height:44px; border-radius:50%; background:rgba(0,0,0,.55); color:#fff; display:flex; align-items:center; justify-content:center; font-size:15px; -webkit-backdrop-filter:blur(6px); backdrop-filter:blur(6px);}
   .stage .placeholder{color:#86868b; font-size:17px; padding:80px 20px;}
   .hero-actions{display:flex; gap:10px; justify-content:center; align-items:center; margin-top:32px; flex-wrap:wrap;}
   .hint{font-size:13px; color:#86868b; letter-spacing:-.12px;}
@@ -96,6 +99,29 @@
   #exporting{position:fixed; inset:0; background:rgba(255,255,255,.7); display:none; align-items:center; justify-content:center; z-index:50; flex-direction:column; gap:10px;}
   #exporting .spin{width:34px; height:34px; border:3px solid var(--divider-soft); border-top-color:var(--primary); border-radius:50%; animation:spin .8s linear infinite;}
   @keyframes spin{to{transform:rotate(360deg);}}
+
+  /* 动态效果 */
+  .reveal{opacity:0; transform:translateY(24px); transition:opacity .7s ease, transform .7s ease;}
+  .reveal.in{opacity:1; transform:none;}
+  @keyframes rise{from{opacity:0; transform:translateY(20px);} to{opacity:1; transform:none;}}
+  .hero-title{animation:rise .8s ease both;}
+  .hero-sub{animation:rise .8s .1s ease both;}
+  .stage{animation:rise .8s .2s ease both;}
+  .hero-actions{animation:rise .8s .3s ease both;}
+  .hero{position:relative; overflow:hidden;}
+  .hero::before{content:""; position:absolute; inset:0; pointer-events:none;
+    background:radial-gradient(600px 420px at 50% 10%, rgba(41,151,255,.16), transparent 70%);
+    animation:glow 8s ease-in-out infinite alternate;}
+  @keyframes glow{from{opacity:.55;} to{opacity:1;}}
+  .chip{transition:transform .2s ease, border-color .2s ease, box-shadow .2s ease;}
+  .chip:hover{transform:translateY(-3px);}
+  .chip:active{transform:scale(.96);}
+  .btn:hover{opacity:.85;}
+  input[type=range]{-webkit-appearance:none; appearance:none; height:4px; background:#d2d2d7; border-radius:9999px; outline:none;}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none; appearance:none; width:22px; height:22px; border-radius:50%; background:#fff; border:1px solid #d2d2d7; box-shadow:0 1px 4px rgba(0,0,0,.15); cursor:pointer; transition:transform .15s;}
+  input[type=range]::-webkit-slider-thumb:active{transform:scale(1.15);}
+  input[type=range]::-moz-range-thumb{width:22px; height:22px; border-radius:50%; background:#fff; border:1px solid #d2d2d7; cursor:pointer;}
+
   @media (max-width:640px){
     .hero{padding:48px 16px 40px;}
     .hero-title{font-size:28px;}
@@ -116,16 +142,18 @@
 <section class="hero">
   <h2 class="hero-title">让照片更有质感</h2>
   <p class="hero-sub">选一个滤镜，或手动微调，导出高清照片。</p>
-  <div class="stage">
-    <canvas id="preview"></canvas>
+  <div class="stage" id="stage">
     <div class="placeholder" id="placeholder">上传一张照片开始</div>
+    <canvas id="origCanvas"></canvas>
+    <canvas id="preview"></canvas>
+    <div class="ba-handle" id="baHandle"><div class="ba-knob">⇔</div></div>
   </div>
   <div class="hero-actions">
-    <button class="btn ghost-dark" id="btnHold">👁 按住看原图</button>
     <button class="btn ghost-dark" id="btnReset">重置参数</button>
     <button class="btn ghost-dark" id="btnSave">💾 存为我的滤镜</button>
     <span class="hint" id="curName"></span>
   </div>
+  <p class="hint" style="margin-top:18px;">拖动照片中间的线，左右对比原图与滤镜效果</p>
 </section>
 
 <section class="band light">
@@ -326,6 +354,9 @@
   var previewMax = 1000;
 
   var preview = document.getElementById("preview");
+  var origCanvas = document.getElementById("origCanvas");
+  var stage = document.getElementById("stage");
+  var baHandle = document.getElementById("baHandle");
   var placeholder = document.getElementById("placeholder");
 
   function ensureImage(){
@@ -338,15 +369,36 @@
 
   function draw(){
     if (!curImage){
-      preview.style.display = "none"; placeholder.style.display = "block"; return;
+      preview.style.display = "none"; origCanvas.style.display = "none"; baHandle.style.display = "none";
+      placeholder.style.display = "block"; return;
     }
-    preview.style.display = "block"; placeholder.style.display = "none";
+    placeholder.style.display = "none";
+    preview.style.display = "block"; origCanvas.style.display = "block"; baHandle.style.display = "block";
     var c = renderToCanvas(curImage, curParams, previewMax);
     preview.width = c.width; preview.height = c.height;
-    var g = preview.getContext("2d");
-    g.drawImage(c, 0, 0);
+    origCanvas.width = c.width; origCanvas.height = c.height;
+    origCanvas.getContext("2d").drawImage(curImage, 0, 0, c.width, c.height);
+    preview.getContext("2d").drawImage(c, 0, 0);
     highlightActive();
   }
+
+  function pulsePreview(){
+    preview.style.opacity = 0.5;
+    requestAnimationFrame(function(){ requestAnimationFrame(function(){ preview.style.opacity = 1; }); });
+  }
+
+  var dragging = false;
+  function updateCut(e){
+    if (!curImage) return;
+    var r = stage.getBoundingClientRect();
+    var x = (e.clientX - r.left) / r.width * 100;
+    x = Math.max(0, Math.min(100, x));
+    stage.style.setProperty("--cut", x + "%");
+  }
+  stage.addEventListener("pointerdown", function(e){ dragging = true; updateCut(e); try{ stage.setPointerCapture(e.pointerId); }catch(_){} });
+  stage.addEventListener("pointermove", function(e){ if (dragging) updateCut(e); });
+  stage.addEventListener("pointerup", function(){ dragging = false; });
+  stage.addEventListener("pointercancel", function(){ dragging = false; });
 
   var drawTimer = null;
   function scheduleDraw(ms){
@@ -395,6 +447,7 @@
       inp.nextSibling.textContent = fmtVal({val: v, unit: p.unit});
     });
     scheduleDraw(20);
+    pulsePreview();
   }
 
   function syncSliders(){
@@ -459,26 +512,6 @@
     };
     img.src = url;
   });
-
-  var btnHold = document.getElementById("btnHold");
-  var holdCtx = null, holdCanvas = null;
-  function showOriginal(){
-    if (!curImage) return;
-    var w = curImage.naturalWidth || curImage.width;
-    var h = curImage.naturalHeight || curImage.height;
-    var scale = Math.min(1, previewMax/w);
-    holdCanvas = document.createElement("canvas");
-    holdCanvas.width = Math.max(1, Math.round(w*scale));
-    holdCanvas.height = Math.max(1, Math.round(h*scale));
-    holdCtx = holdCanvas.getContext("2d");
-    holdCtx.drawImage(curImage, 0, 0, holdCanvas.width, holdCanvas.height);
-    var g = preview.getContext("2d");
-    g.drawImage(holdCanvas, 0, 0);
-  }
-  function showFiltered(){ draw(); }
-  btnHold.addEventListener("pointerdown", showOriginal);
-  btnHold.addEventListener("pointerup", showFiltered);
-  btnHold.addEventListener("pointerleave", showFiltered);
 
   document.getElementById("btnSave").addEventListener("click", function(){
     var name = prompt("给这个滤镜起个名字：");
@@ -558,6 +591,13 @@
   buildChips();
   ensureImage();
   draw();
+
+  if ("IntersectionObserver" in window){
+    var io = new IntersectionObserver(function(es){
+      es.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); } });
+    }, {threshold:.12});
+    document.querySelectorAll(".band").forEach(function(b){ b.classList.add("reveal"); io.observe(b); });
+  }
 
   window.xiutu = { processPixels: processPixels, makeSample: makeSample, renderToCanvas: renderToCanvas, FILTER_PARAMS: FILTER_PARAMS };
 })();
