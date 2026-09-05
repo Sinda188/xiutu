@@ -59,19 +59,20 @@
   .col-side{position:sticky; top:76px; max-height:calc(100vh - 96px); overflow:auto; background:var(--canvas); border:1px solid var(--hairline); border-radius:18px; padding:22px;}
   .filters{background:var(--canvas); border:1px solid var(--hairline); border-radius:18px; padding:22px; margin-top:24px;}
   .sec-title{font-size:21px; font-weight:600; letter-spacing:0; margin:0 0 20px; display:flex; align-items:center; justify-content:space-between;}
-  /* 两侧空白处流动流光 */
+  /* 两侧空白处：暮色山水画面 + 流动光 */
   body{
-    background-color:var(--canvas);
+    background-color:#12212f;
     background-image:
-      radial-gradient(320px 480px at 0% 30%, rgba(0,102,204,.20), transparent 70%),
-      radial-gradient(320px 480px at 100% 70%, rgba(0,102,204,.20), transparent 70%);
+      radial-gradient(300px 500px at 0% 25%, rgba(0,170,255,.32), transparent 70%),
+      radial-gradient(300px 500px at 100% 75%, rgba(0,170,255,.32), transparent 70%),
+      linear-gradient(180deg, #16233f 0%, #2e4a7a 24%, #a8624a 48%, #e8a86a 57%, #2b4a5e 63%, #12212f 100%);
     background-repeat:no-repeat;
-    background-size:100% 200%;
-    animation:sideFlow 9s ease-in-out infinite alternate;
+    background-size:100% 200%, 100% 200%, 100% 100%;
+    animation:sideFlow 11s ease-in-out infinite alternate;
   }
   @keyframes sideFlow{
-    from{ background-position:0% 0%, 0% 0%; }
-    to{ background-position:0% 100%, 0% 100%; }
+    from{ background-position:0% 0%, 0% 0%, 0% 0%; }
+    to{ background-position:0% 100%, 0% 100%, 0% 0%; }
   }
 
   /* 滤镜胶囊 */
