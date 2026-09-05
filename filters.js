@@ -6,21 +6,21 @@ window.FILTERS = [
   {
     id: "jzg-fresh",
     name: "九寨沟清新",
-    desc: "绿意+青水、偏高饱和、暗部略提亮（依参考图色彩数据推导，可再微调）",
+    desc: "青绿水色+高饱和翠绿，明亮通透（亲眼精调版）",
     tags: ["风景", "清新", "自然"],
     params: {
-      temperature: -8,
-      tint: -8,
-      exposure: 0,
-      contrast: 18,
+      temperature: -7,
+      tint: -9,
+      exposure: 0.12,
+      contrast: 20,
       highlights: -6,
-      shadows: 14,
-      saturation: 32,
-      vibrance: 24,
-      fade: 14,
+      shadows: 12,
+      saturation: 34,
+      vibrance: 26,
+      fade: 8,
       grain: 0,
       vignette: 0,
-      cyanBoost: 22
+      cyanBoost: 24
     }
   }
 ];
