@@ -54,12 +54,12 @@
   .hero-actions{display:flex; gap:10px; justify-content:center; align-items:center; margin-top:32px; flex-wrap:wrap;}
   .hint{font-size:13px; color:#86868b; letter-spacing:0;}
 
-  /* 区块（全宽、颜色交替） */
-  .band{padding:72px 22px;}
-  .band.light{background-color:var(--canvas); background-image:radial-gradient(900px 560px at 14% 45%, rgba(0,102,204,.20), transparent 65%), radial-gradient(900px 560px at 86% 55%, rgba(0,102,204,.20), transparent 65%); background-size:200% 200%; animation:flowGlow 12s ease-in-out infinite;}
-  .band.parchment{background-color:var(--parchment); background-image:radial-gradient(900px 560px at 14% 40%, rgba(0,102,204,.18), transparent 65%), radial-gradient(900px 560px at 86% 60%, rgba(0,102,204,.18), transparent 65%); background-size:200% 200%; animation:flowGlow 12s ease-in-out infinite;}
-  .band-inner{max-width:1200px; margin:0 auto;}
-  .sec-title{font-size:28px; font-weight:600; letter-spacing:0; margin:0 0 28px; display:flex; align-items:center; justify-content:space-between;}
+  /* 左右布局编辑器 */
+  .editor{max-width:1280px; margin:0 auto; padding:24px 20px 56px; display:grid; grid-template-columns:1fr 400px; gap:24px; align-items:start;}
+  .col-main{min-width:0;}
+  .col-side{position:sticky; top:76px; max-height:calc(100vh - 96px); overflow:auto; background:var(--canvas); border:1px solid var(--hairline); border-radius:18px; padding:22px;}
+  .filters{background:var(--canvas); border:1px solid var(--hairline); border-radius:18px; padding:22px; margin-top:24px;}
+  .sec-title{font-size:21px; font-weight:600; letter-spacing:0; margin:0 0 20px; display:flex; align-items:center; justify-content:space-between;}
 
   /* 滤镜胶囊 */
   .chips{display:flex; gap:14px; overflow-x:auto; padding-bottom:8px; -webkit-overflow-scrolling:touch;}
@@ -122,6 +122,10 @@
   input[type=range]::-webkit-slider-thumb:active{transform:scale(1.15);}
   input[type=range]::-moz-range-thumb{width:22px; height:22px; border-radius:50%; background:#fff; border:1px solid #d2d2d7; cursor:pointer;}
 
+  @media (max-width:900px){
+    .editor{grid-template-columns:1fr; max-width:980px;}
+    .col-side{position:static; max-height:none; overflow:visible;}
+  }
   @media (max-width:640px){
     .hero{padding:48px 16px 40px;}
     .hero-title{font-size:28px;}
@@ -139,36 +143,36 @@
   <button class="btn primary" id="btnUpload">上传照片</button>
 </header>
 
-<section class="hero">
-  <h2 class="hero-title">让照片更有质感</h2>
-  <p class="hero-sub">选一个滤镜，或手动微调，导出高清照片。</p>
-  <div class="stage" id="stage">
-    <div class="placeholder" id="placeholder">上传一张照片开始</div>
-    <canvas id="origCanvas"></canvas>
-    <canvas id="preview"></canvas>
-    <div class="ba-handle" id="baHandle"><div class="ba-knob">⇔</div></div>
-  </div>
-  <div class="hero-actions">
-    <button class="btn ghost-dark" id="btnReset">重置参数</button>
-    <button class="btn ghost-dark" id="btnSave">💾 存为我的滤镜</button>
-    <span class="hint" id="curName"></span>
-  </div>
-  <p class="hint" style="margin-top:18px;">拖动照片中间的线，左右对比原图与滤镜效果</p>
-</section>
+<main class="editor">
+  <div class="col-main">
+    <section class="hero">
+      <h2 class="hero-title">让照片更有质感</h2>
+      <p class="hero-sub">选一个滤镜，或手动微调，导出高清照片。</p>
+      <div class="stage" id="stage">
+        <div class="placeholder" id="placeholder">上传一张照片开始</div>
+        <canvas id="origCanvas"></canvas>
+        <canvas id="preview"></canvas>
+        <div class="ba-handle" id="baHandle"><div class="ba-knob">⇔</div></div>
+      </div>
+      <div class="hero-actions">
+        <button class="btn ghost-dark" id="btnReset">重置参数</button>
+        <button class="btn ghost-dark" id="btnSave">💾 存为我的滤镜</button>
+        <span class="hint" id="curName"></span>
+      </div>
+      <p class="hint" style="margin-top:18px;">拖动照片中间的线，左右对比原图与滤镜效果</p>
+    </section>
 
-<section class="band light">
-  <div class="band-inner">
-    <div class="sec-title"><span>滤镜</span><span class="hint" id="filterCount" style="color:#86868b;font-size:14px;"></span></div>
-    <div class="chips" id="chips"></div>
+    <section class="filters">
+      <div class="sec-title">滤镜 <span class="hint" id="filterCount" style="color:#86868b;font-size:14px;"></span></div>
+      <div class="chips" id="chips"></div>
+    </section>
   </div>
-</section>
 
-<section class="band parchment">
-  <div class="band-inner">
+  <aside class="col-side">
     <div class="sec-title">手动微调</div>
     <div id="sliders"></div>
-  </div>
-</section>
+  </aside>
+</main>
 
 <footer>照片全程在你的浏览器本地处理，不会上传到任何服务器。</footer>
 
@@ -601,7 +605,7 @@
     var io = new IntersectionObserver(function(es){
       es.forEach(function(en){ if (en.isIntersecting){ en.target.classList.add("in"); io.unobserve(en.target); } });
     }, {threshold:.12});
-    document.querySelectorAll(".band").forEach(function(b){ b.classList.add("reveal"); io.observe(b); });
+    document.querySelectorAll(".filters").forEach(function(b){ b.classList.add("reveal"); io.observe(b); });
   }
 
   window.xiutu = { processPixels: processPixels, makeSample: makeSample, renderToCanvas: renderToCanvas, FILTER_PARAMS: FILTER_PARAMS };
