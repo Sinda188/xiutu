@@ -65,10 +65,10 @@
 
   /* ============ DriftWall ============ */
   .drift-wall{position:relative; width:100%; height:calc(100vh - 130px); min-height:480px; overflow:hidden;
-    perspective:1200px; perspective-origin:50% 50%; --dw-tile-w:200px; --dw-tile-h:132px; --dw-gap:18px;
-    --dw-radius:14px; --dw-lift:64px; --dw-dim:0.55; --dw-gray:0; --dw-overlay:#060010; --dw-edge:40%;
-    -webkit-mask-image:radial-gradient(ellipse 78% 82% at 50% 46%, #000 var(--dw-edge), transparent 100%), linear-gradient(to top, #000 var(--dw-edge), transparent 100%);
-    -webkit-mask-composite:source-in; mask-image:radial-gradient(ellipse 78% 82% at 50% 46%, #000 var(--dw-edge), transparent 100%), linear-gradient(to top, #000 var(--dw-edge), transparent 100%); mask-composite:intersect;
+    perspective:1200px; perspective-origin:50% 50%; --dw-tile-w:184px; --dw-tile-h:120px; --dw-gap:16px;
+    --dw-radius:12px; --dw-lift:64px; --dw-dim:0.55; --dw-gray:0; --dw-overlay:#060010; --dw-edge:22%;
+    -webkit-mask-image:radial-gradient(ellipse 92% 90% at 50% 48%, #000 var(--dw-edge), transparent 100%), linear-gradient(to top, #000 var(--dw-edge), transparent 100%);
+    -webkit-mask-composite:source-in; mask-image:radial-gradient(ellipse 92% 90% at 50% 48%, #000 var(--dw-edge), transparent 100%), linear-gradient(to top, #000 var(--dw-edge), transparent 100%); mask-composite:intersect;
   }
   .drift-wall__plane{position:absolute; top:50%; left:50%; display:flex; flex-direction:row; transform-style:preserve-3d; cursor:pointer; transform-origin:50% 50%; will-change:transform;}
   .drift-wall__col{position:relative; width:calc(var(--dw-tile-w) + var(--dw-gap)); transform-style:preserve-3d;}
@@ -300,10 +300,10 @@
   (function(){
     var root=document.getElementById("driftwall");
     var items=loadFilters();
-    var COLS=3,TILE_W=200,TILE_H=132,GAP=18,RADIUS=14,TILT=16,TURN=-14,ROLL=0,PERSPECTIVE=1200,DEPTH=120,SPEED=42,DIRECTION="up",VARIANCE=.45,PARALLAX=.6,PAUSE=false,LIFT=64,FADE=.6,DIM=.55,OVERLAY="#060010";
-    var containerHeight=600;
+    var COLS=3,TILE_W=184,TILE_H=120,GAP=16,RADIUS=12,TILT=16,TURN=-14,ROLL=0,PERSPECTIVE=1200,DEPTH=120,SPEED=42,DIRECTION="up",VARIANCE=.45,PARALLAX=.6,PAUSE=false,LIFT=64,FADE=.6,DIM=.55,OVERLAY="#060010";
+    var containerHeight=1000;
     var columnItems=[];for(var c=0;c<COLS;c++)columnItems.push(items.filter(function(_,i){return i%COLS===c;}));
-    var columnMeta=columnItems.map(function(col){var unit=TILE_H+GAP;var copyHeight=Math.max(unit,col.length*unit);var copies=Math.max(2,Math.ceil((containerHeight*1.6)/copyHeight)+1);return{copyHeight:copyHeight,copies:copies};});
+    var columnMeta=columnItems.map(function(col){var unit=TILE_H+GAP;var copyHeight=Math.max(unit,col.length*unit);var copies=Math.max(2,Math.ceil((containerHeight*1.8)/copyHeight)+1);return{copyHeight:copyHeight,copies:copies};});
     var baseVelocities=columnItems.map(function(_,c){var dirSign=DIRECTION==="up"?1:-1;var altSign=c%2===0?1:-1;var pseudo=((c*.6180339887+.35)%1)*2-1;var factor=1+VARIANCE*pseudo;return SPEED*factor*dirSign*altSign;});
     var offsets=columnMeta.map(function(meta,c){return meta.copyHeight*((c*.37)%1);});
     var vel=columnItems.map(function(){return 0;});
